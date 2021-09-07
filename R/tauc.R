@@ -3,10 +3,6 @@
 #' This function uses Tauc plotting to determine the optical band gap
 #' from your supplied UV-Vis absorbance spectra.
 #' 
-#' For the next version of this function, consider how we could
-#' adapt it to handle energy/absorbance with associated errors (error propagation).
-#' Actually, more importantly, make it handle multiple spectra first.
-#'
 #' @param energy, numeric vector, in eV
 #' @param absorbance, numeric vector, unitless, should be same length as energy
 #' @param r, exponent that determines transition type, 0.5 for direct allowed (default),
