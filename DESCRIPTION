@@ -1,0 +1,32 @@
+Package: uvvistauc
+Type: Package
+Title: Calculate Optical Band Gap of Semiconductors from UV-Vis Spectra using the Tauc Method
+Version: 0.1.0.9000
+Author: Taha Ahmed
+Maintainer: Taha Ahmed <taha@chepec.se>
+Description: This package determines the optical band gap by applying the Tauc plot method
+    to UV-Vis absorbance spectra. This method is commonly used for semiconductors with
+    direct or indirect band gaps, such as oxides, sulfides, and many others.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+VignetteBuilder: knitr
+Imports:
+   rlang,
+   dplyr,
+   magrittr,
+   tibble,
+   varhandle
+Suggests: 
+   knitr,
+   rmarkdown,
+   usethis,
+   here,
+   ggplot2,
+   ggtext,
+   common,
+   photoec,
+   conflicted
+RoxygenNote: 7.1.1
+Depends: 
+    R (>= 2.10)
