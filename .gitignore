@@ -7,4 +7,6 @@
 *.code-workspace
 man/figures/*.svg
 man/figures/*.xopp
+vignettes/*_cache/
+vignettes/*_files/
 Meta/

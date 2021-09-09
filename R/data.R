@@ -4,11 +4,12 @@
 #'     Recorded using OceanOptics HR2000 UV-Vis spectrophotometer.
 #'     For more details, see the cited sources.
 #' @docType data
-#' @format A data frame with 93342 rows and 11 variables:
+#' @format A data frame with 67257 rows and 12 variables:
 #' \describe{
-#'   \item{sampleid}{}
-#'   \item{wavelength}{}
-#'   \item{intensity}{}
+#'   \item{sampleid}{A string identifying the sample/spectrum}
+#'   \item{time}{Time since start of data collection, in minutes}
+#'   \item{wavelength}{Wavelength/nm}
+#'   \item{intensity}{Absorbance, unitless}
 #'   \item{IntegrationTime}{}
 #'   \item{n_Averaged}{}
 #'   \item{Boxcar}{}

@@ -14,9 +14,12 @@ vignette: >
 library(knitr)
 library(dplyr)
 library(magrittr)
+library(tibble)
 library(usethis)
 library(here)
-library(ggplot2)
+# library(ggplot2)   # loaded by gganimate
+library(gganimate)
+library(cowplot)
 library(ggtext)
 library(common)
 library(photoec)
@@ -36,7 +39,8 @@ options(
    warn = 0,
    stringsAsFactors = FALSE)
 opts_chunk$set(
-   dev        = 'svg',
+   # with 'svg', the multi-spectra plot was making intro.html > 5 Mb
+   dev        = 'png',
    fig.width  = 7.10,
    fig.height = 4.39,
    fig.align  = 'center',
@@ -51,10 +55,21 @@ opts_chunk$set(
 ```
 
 
+```{r parameters, echo=FALSE}
+r            <- 0.5
+lowE.limits  <- c(3.0, 3.4)
+highE.limits <- c(3.9, 4.3)
+bg.limits    <- c(0.3, 0.8)
+anim_path    <- here("man/figures/animation.gif")
+```
 
-For direct band gap semiconductors, such as ZnO or CdS, the product of
-their absorption coefficient $\alpha$ and incident photon energy $hv$
-is proportional to the square root of the energy difference between their
+
+
+## Introduction
+
+For a direct band gap semiconductor, such as ZnO, the product of
+its absorption coefficient $\alpha$ and incident photon energy $hv$
+is proportional to the square root of the energy difference between its
 band gap $E_\text{g}$ and the incident photon energy $E$:
 
 $$
@@ -82,85 +97,280 @@ A Tauc plot is usually performed manually, that is, the band edge region is iden
 visually, and then a linear fit to the linear part of the band edge is performed manually
 and the intersect with the abscissa is calculated to arrive at the optical band gap.
 
-If you have a large number of spectra, say from an in-situ experiment, where then band edge
-is slowly changing (e.g., due to a changing particle size), calculating the band gap for
-each spectrum quickly becomes tedious.
+If you have a large number of spectra, say from a time series experiment, its unusual for
+the band edge to stay constant over time, e.g., due to changing particle size, and so
+calculating the band gap by hand for each spectrum quickly becomes tedious.
 
-So a few years ago, I put together some code in R that mostly automated this process,
-and used it successfully for work that was later published (see Ahmed & Edvinsson, JPCC 2020).
+We have developed a semi-automatic algorithm,
+that only requires you to supply four *x* values: 
+**two values that define the "plateau" on the low-energy side of the band edge**, and 
+**two values that define the "plateau" on the high-energy side of the band edge**.
 
-I have now revisited this code, since improved into a semi-automatic algorithm, that only 
-requires you to supply four *x* values: two values that define the "plateau" on the
-low-energy side of the band edge, and two values that define the "plateau" on the high-energy
-side of the band edge.
-
-This algorithm returns the calculated optical band gap, as well as the fitted Tauc line
-itself.
+This algorithm takes the energy and absorbance of a single spectrum as input,
+and returns the calculated optical band gap, as well as the fitted Tauc line
+and its goodness-of-fit parameters (adjusted R-squared and number of points).
 
 Note that this package expects you to supply the UV-Vis spectrum as 
 absorbance (unitless) vs energy (in electronvolts).
 
-```{r, results="markup", out.width="100%"}
+```{r sketch, results="markup", out.width="100%"}
 include_graphics(here("man/figures/sketch.png"))
 ```
 
-The algorithm uses these values to create two linear fits, that define the "floor" (red line)
+This sketch is a visual attempt to describe the algorithm we have developed.
+The minimum necessary input is `highE.limits` and `lowE.limits`, which define
+the dark green and dark red circles, respectively.
+Using these x-values, we find all spectral datapoints inside their defined ranges
+and create two linear fits, that define the "floor" (red line)
 and "ceiling" (green line) below and above the band edge, respectively.
 The vertical extent of the band edge can then be calculated (dashed orange line, `ceiling2floor`), 
-and finally a subset of this, whose extent is defined by the input parameter 
+and finally a subset of vertical range, whose extent is defined by the input parameter 
 `bg.limits` (which defaults to `c(0.3, 0.8)` of the floor-to-ceiling distance), 
-is used to fit the Tauc line (solid orange line).
+is used to select the spectral datapoints that are fitted linearly (solid orange line).
+The intersect of this linear fit with the x-axis is the optical band gap.
 
 
-```{r, eval=FALSE, echo=FALSE}
+```{r datareset, eval=FALSE, echo=FALSE}
 # note for posterity - this is how data/UVVisDataZnO.rda was created
 # original data source: /media/bay/taha/chepec/papers/01_drafts/P12-ZnO-QDs-sizes-photocatalysis/data/abs-pc-spectra-N04H-small-nostir.rda.gz
 # was manually copied to inst/extdata/spectra.rda.gz
-# exp_data <- common::LoadRData2Variable(here::here("inst/extdata/spectra.rda.gz"))
-# UVVisDataZnO <- 
+# exp_data <- common::LoadRData2Variable(here("inst/extdata/spectra.rda.gz"))
+# UVVisDataZnO <-
 #    exp_data %>%
-#    filter(wavelength < photoec::energy2wavelength(2.5)) %>%
-#    select(-range, -DateTime)
+#    filter(
+#       wavelength < photoec::energy2wavelength(2.5) &
+#       wavelength > photoec::energy2wavelength(4.5)) %>%
+#    select(-range, -DateTime) %>%
+#    mutate(time = sampleid %>% gsub("^N04H-", "", .) %>% as.numeric()) %>%
+#    select(sampleid, time, everything())
 # usethis::use_data(UVVisDataZnO, compress = "bzip2", overwrite = TRUE)
 ```
 
 This package includes a dataset with 141 UV-Vis spectra from an experiment
-on growing colloidal ZnO nanoparticles.
+on growing colloidal ZnO nanoparticles. This data is a subset of the data
+behind our publication (see Ahmed & Edvinsson, JPCC 2020).
 
-```{r, echo=TRUE, results="markup"}
-UVVisDataZnO <- common::LoadRData2Variable(here::here("data/UVVisDataZnO.rda"))
+
+
+## Working with a single spectrum
+
+```{r ref.label="parameters", echo=TRUE, eval=FALSE}
+```
+
+```{r dataset, echo=TRUE, results="markup"}
+this.data <- uvvistauc::UVVisDataZnO
+# convert wavelength in nm to energy in eV
+this.data %<>% mutate(energy = photoec::wavelength2energy(wavelength))
 ```
 
 
-```{r echo=TRUE, results="markup"}
+```{r single-spectrum-call, echo=TRUE, results="markup"}
+this.spectrum <-
+   this.data %>%
+   filter(sampleid == "N04H-00000")
 spectrum <-
-   UVVisDataZnO %>%
-   filter(sampleid == "N04H-00000") %>%
-   filter(wavelength < energy2wavelength(3))
-spectrum$energy <- photoec::wavelength2energy(spectrum$wavelength)
-resdf <-
    uvvistauc::tauc(
-      spectrum$energy, 
-      spectrum$intensity, 
-      lowE.limits = c(2.8, 3.4),
-      highE.limits = c(3.9, 4.3))
+      energy       = this.spectrum$energy,
+      absorbance   = this.spectrum$intensity,
+      r            = r,
+      lowE.limits  = lowE.limits,
+      highE.limits = highE.limits,
+      bg.limits    = bg.limits)
 ```
 
-```{r echo=FALSE}
-ggplot(resdf) +
+```{r single-spectrum-plot, echo=FALSE}
+ggplot(spectrum) +
    coord_cartesian(ylim = c(0, 7), xlim = c(3.0, 4.3)) +
    geom_line(aes(energy, fit.tauc), colour = "orange", size = 1.5, alpha = 0.65) +
    geom_point(aes(energy, absorbance)) +
    geom_line(aes(energy, absorbance)) +
    geom_line(aes(energy, floor), colour = "red") +
-   geom_line(aes(energy, ceiling), colour = "green") +
+   geom_line(aes(energy, ceiling), colour = "#008000") +
    geom_point(
       aes(energy, absorbance),
       colour = "orange", size = 1.5,
-      data = resdf %>% filter(edge == TRUE)) +
-   labs(x = "E/eV", y = "(Abs)<sup>1/r</sup>") +
+      data = spectrum %>% filter(edge == TRUE)) +
+   labs(x = "E/eV", y = paste0("(Abs)<sup>", 1/r, "</sup>")) +
    theme(axis.title.y = element_markdown())
 ```
+
+
+
+## Working with multiple spectra
+
+The `uvvistauc()` takes one one spectrum at a time.
+The easiest way to work around this intended limitation is to wrap
+the function call inside a loop.
+
+What follows is a simple demonstration of this approach,
+using the ZnO dataset included with this package.
+
+```{r multi-spectra-call, cache=TRUE}
+# individual spectra in the dataset are identified by their sampleid
+sampleids <- this.data %>% pull(sampleid) %>% unique()
+# create a tibble of sampleids and input params
+# if you want to customise *.limits for each spectrum, supply a vector
+# for each column instead of a single value
+tauc.params <-
+   tibble(
+      sampleid = sampleids,
+      lowE.min = min(lowE.limits), lowE.max = max(lowE.limits),
+      highE.min = min(highE.limits), highE.max = max(highE.limits),
+      bg.min = min(bg.limits), bg.max = max(bg.limits))
+# empty dataframe that we will populate in the loop
+spectra <- data.frame()
+for (s in 1:length(sampleids)) {
+   spectra <- 
+      bind_rows(
+         spectra,
+         bind_cols(
+            # we want to save sampleid and time columns from the data dataframe into the spectra df
+            sampleid = sampleids[s],
+            time = (this.data %>% pull(time) %>% unique())[s],
+            uvvistauc::tauc(
+               energy = this.data %>% filter(sampleid == sampleids[s]) %>% pull(energy),
+               absorbance = this.data %>% filter(sampleid == sampleids[s]) %>% pull(intensity),
+               r = 0.5,
+               lowE.limits = 
+                  c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(lowE.min),
+                    tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(lowE.max)),
+               highE.limits = 
+                  c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(highE.min),
+                    tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(highE.max)),
+               bg.limits = 
+                  c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(bg.min),
+                    tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(bg.max)))))
+   message(paste("Completed", sampleids[s]))
+}
+```
+
+We can quickly create a rudimentary plot demonstrating the fitted "ceiling" (green) and "floor" (red) across
+the whole dataset, as well as the Tauc line itself (orange).
+
+```{r multi-spectra-plot, echo=TRUE}
+ggplot(spectra, aes(group = sampleid)) +
+   coord_cartesian(ylim = c(0, 7), xlim = c(3, 4.4)) +
+   geom_line(aes(energy, floor), colour = "red", size = 0.2, alpha = 0.4) +
+   geom_line(aes(energy, ceiling), colour = "#008000", size = 0.2, alpha = 0.4) +
+   geom_line(aes(energy, absorbance), colour = "black", size = 0.3) +
+   geom_line(aes(energy, fit.tauc), colour = "orange", size = 0.3, alpha = 0.6) +
+   labs(x = "E/eV", y = paste0("(Abs)<sup>", 1/r, "</sup>")) +
+   theme(axis.title.y = element_markdown())
+```
+
+We can also get a quick measure of the goodness of Tauc fit across all spectra by inspecting the
+statistics of the adjusted R-squared and the number of fitted datapoints:
+
+```{r fitstat, echo=TRUE, results="markup"}
+summary(spectra$fit.adj_rsq)
+summary(spectra$fit.points)
+```
+
+The summary statistics can also be plotted, along with the calculated band gap values.
+
+```{r fitstatplot, echo=TRUE}
+p1 <- ggplot(spectra) +
+   geom_point(aes(time, fit.Eg)) +
+   theme(axis.text = element_text(size = 11), axis.title.x = element_blank())
+p2 <- ggplot(spectra) +
+   geom_point(aes(time, fit.adj_rsq)) +
+   theme(axis.text = element_text(size = 11), axis.title.x = element_blank())
+p3 <- ggplot(spectra) +
+   geom_point(aes(time, fit.points)) +
+   labs(x = "Time/min") +
+   theme(axis.text = element_text(size = 11))
+plot_grid(p1, p2, p3, nrow = 3, align = "v")
+```
+
+From all this we can tell that for this dataset, the Tauc fits have a high quality
+over the entire dataset: R-squared values are very close to unity, and the number
+of fitted points never dip below 12, mostly staying around 20.
+
+
+
+
+## Animated visualisation of this package's Tauc algorithm
+
+In this animation, we step through each spectrum (black) in our dataset,
+showing its "ceiling" (green, based on the user-supplied `highE.limits`)
+and its "floor" (red, based on the user-supplied `lowE.limits`),
+as well as the actual data points that the algorithm selected for fitting
+(yellow circles), the resultant linear fit (orange), and the intersect
+of the Tauc fit with the x-axis (large black circle).
+
+I think this animation is really neat, but then I'm partial, of course ;-)
+
+```{r animation, echo=FALSE, cache=TRUE}
+p <-
+   ggplot() +
+   # let's concentrate on the band edge
+   coord_cartesian(
+      ylim = c(0, 6),
+      xlim = c(unique(tauc.params$lowE.min), unique(tauc.params$highE.max))) +
+   # x-axis # layer 1
+   geom_hline(yintercept = 0, colour = "grey40") +
+   # "floor" # layer 2
+   geom_line(
+      data = spectra, aes(energy, floor, group = sampleid),
+      colour = "red", size = 0.60) +
+   # "ceiling" # layer 3
+   geom_line(
+      data = spectra, aes(energy, ceiling, group = sampleid),
+      colour = "#008000", size = 0.60) +
+   # the UV-Vis spectra # layer 4
+   geom_line(
+      data = spectra, aes(energy, absorbance, group = sampleid),
+      colour = "black", size = 0.50) +
+   # the Tauc fit # layer 5
+   geom_line(
+      data = spectra, aes(energy, fit.tauc, group = sampleid),
+      colour = "orange", size = 1.0) +
+   # the spectral datapoints fitted selected by our algorithm for Tauc fitting # layer 6
+   geom_point(
+      data = spectra %>% filter(edge == TRUE),
+      aes(energy, absorbance, group = sampleid),
+      fill = "orange", colour = "white", shape = 21, size = 2.0) +
+   # the point where fitted Tauc line intercepts x-axis, i.e., optical band gap # layer 7
+   geom_point(
+      data = spectra, aes(x = fit.Eg, group = sampleid), y = 0,
+      fill = NA, colour = "black", shape = 21, size = 5) +
+   # text annotation # layer 8
+   geom_richtext(
+      data = spectra, x = 3.0, y = 6, size = 4.5,
+      fill = NA, label.color = NA, hjust = 0, vjust = 1,
+      aes(label = paste("t =", time, "min"))) +
+   labs(x = "E/eV", y = paste0("(Abs)<sup>", 1/r, "</sup>")) +
+   theme(
+      axis.text = element_text(size = 11),
+      axis.title.y = element_markdown())
+p_anim <-
+   p + 
+   transition_time(time) +
+   # it appears that if you issue multiple shadow_mark() statements, only the last one takes effect
+   # so therefore I could not achieve separate shadow *colours* for ceiling/floor/spectrum
+   # I would have liked each layer's shadow to be a faded version of its original colour...
+   # https://github.com/thomasp85/gganimate/issues/163 (sort of related issue)
+   shadow_mark(
+      colour = "grey30", alpha = 0.4, size = 0.15,
+      exclude_layer = c(2, 3, 5, 6, 7, 8),
+      past = TRUE, future = FALSE)
+p_anim_gif <-
+   animate(
+      plot = p_anim,
+      width = 1294, height = 800, units = "px", # produces gif approx 5 Mb
+      res = 150,
+      fps = 1, # default is 10
+      end_pause = 10,
+      # make one frame per UV/Vis spectrum
+      nframes = spectra %>% pull(time) %>% n_distinct())
+anim_save(anim_path)
+```
+
+
+```{r, results="markup", out.width="100%"}
+include_graphics(anim_path)
+```
+
 
 
 

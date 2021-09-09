@@ -47,11 +47,6 @@ tibble with same number of rows as length of input vectors,
 This function uses Tauc plotting to determine the optical band gap
 from your supplied UV-Vis absorbance spectra.
 }
-\details{
-For the next version of this function, consider how we could
-adapt it to handle energy/absorbance with associated errors (error propagation).
-Actually, more importantly, make it handle multiple spectra first.
-}
 \examples{
 \dontrun{
 tauc(energy, absorbance, lowE.limits = c(2.4, 3.4), highE.limits = c(3.9, 4.3))
