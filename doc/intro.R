@@ -104,44 +104,6 @@ ggplot(spectrum) +
    labs(x = "E/eV", y = paste0("(Abs)<sup>", 1/r, "</sup>")) +
    theme(axis.title.y = element_markdown())
 
-## ----multi-spectra-call, cache=TRUE-----------------------------------------------
-# individual spectra in the dataset are identified by their sampleid
-sampleids <- this.data %>% pull(sampleid) %>% unique()
-# create a tibble of sampleids and input params
-# if you want to customise *.limits for each spectrum, supply a vector
-# for each column instead of a single value
-tauc.params <-
-   tibble(
-      sampleid = sampleids,
-      lowE.min = min(lowE.limits), lowE.max = max(lowE.limits),
-      highE.min = min(highE.limits), highE.max = max(highE.limits),
-      bg.min = min(bg.limits), bg.max = max(bg.limits))
-# empty dataframe that we will populate in the loop
-spectra <- data.frame()
-for (s in 1:length(sampleids)) {
-   spectra <- 
-      bind_rows(
-         spectra,
-         bind_cols(
-            # we want to save sampleid and time columns from the data dataframe into the spectra df
-            sampleid = sampleids[s],
-            time = (this.data %>% pull(time) %>% unique())[s],
-            uvvistauc::tauc(
-               energy = this.data %>% filter(sampleid == sampleids[s]) %>% pull(energy),
-               absorbance = this.data %>% filter(sampleid == sampleids[s]) %>% pull(intensity),
-               r = 0.5,
-               lowE.limits = 
-                  c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(lowE.min),
-                    tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(lowE.max)),
-               highE.limits = 
-                  c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(highE.min),
-                    tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(highE.max)),
-               bg.limits = 
-                  c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(bg.min),
-                    tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(bg.max)))))
-   message(paste("Completed", sampleids[s]))
-}
-
 ## ----multi-spectra-plot, echo=TRUE------------------------------------------------
 ggplot(spectra, aes(group = sampleid)) +
    coord_cartesian(ylim = c(0, 7), xlim = c(3, 4.4)) +
@@ -168,71 +130,6 @@ p3 <- ggplot(spectra) +
    labs(x = "Time/min") +
    theme(axis.text = element_text(size = 11))
 plot_grid(p1, p2, p3, nrow = 3, align = "v")
-
-## ----animation, echo=FALSE, cache=TRUE--------------------------------------------
-p <-
-   ggplot() +
-   # let's concentrate on the band edge
-   coord_cartesian(
-      ylim = c(0, 6),
-      xlim = c(unique(tauc.params$lowE.min), unique(tauc.params$highE.max))) +
-   # x-axis # layer 1
-   geom_hline(yintercept = 0, colour = "grey40") +
-   # "floor" # layer 2
-   geom_line(
-      data = spectra, aes(energy, floor, group = sampleid),
-      colour = "red", size = 0.60) +
-   # "ceiling" # layer 3
-   geom_line(
-      data = spectra, aes(energy, ceiling, group = sampleid),
-      colour = "#008000", size = 0.60) +
-   # the UV-Vis spectra # layer 4
-   geom_line(
-      data = spectra, aes(energy, absorbance, group = sampleid),
-      colour = "black", size = 0.50) +
-   # the Tauc fit # layer 5
-   geom_line(
-      data = spectra, aes(energy, fit.tauc, group = sampleid),
-      colour = "orange", size = 1.0) +
-   # the spectral datapoints fitted selected by our algorithm for Tauc fitting # layer 6
-   geom_point(
-      data = spectra %>% filter(edge == TRUE),
-      aes(energy, absorbance, group = sampleid),
-      fill = "orange", colour = "white", shape = 21, size = 2.0) +
-   # the point where fitted Tauc line intercepts x-axis, i.e., optical band gap # layer 7
-   geom_point(
-      data = spectra, aes(x = fit.Eg, group = sampleid), y = 0,
-      fill = NA, colour = "black", shape = 21, size = 5) +
-   # text annotation # layer 8
-   geom_richtext(
-      data = spectra, x = 3.0, y = 6, size = 4.5,
-      fill = NA, label.color = NA, hjust = 0, vjust = 1,
-      aes(label = paste("t =", time, "min"))) +
-   labs(x = "E/eV", y = paste0("(Abs)<sup>", 1/r, "</sup>")) +
-   theme(
-      axis.text = element_text(size = 11),
-      axis.title.y = element_markdown())
-p_anim <-
-   p + 
-   transition_time(time) +
-   # it appears that if you issue multiple shadow_mark() statements, only the last one takes effect
-   # so therefore I could not achieve separate shadow *colours* for ceiling/floor/spectrum
-   # I would have liked each layer's shadow to be a faded version of its original colour...
-   # https://github.com/thomasp85/gganimate/issues/163 (sort of related issue)
-   shadow_mark(
-      colour = "grey30", alpha = 0.4, size = 0.15,
-      exclude_layer = c(2, 3, 5, 6, 7, 8),
-      past = TRUE, future = FALSE)
-p_anim_gif <-
-   animate(
-      plot = p_anim,
-      width = 1294, height = 800, units = "px", # produces gif approx 5 Mb
-      res = 150,
-      fps = 1, # default is 10
-      end_pause = 10,
-      # make one frame per UV/Vis spectrum
-      nframes = spectra %>% pull(time) %>% n_distinct())
-anim_save(anim_path)
 
 ## ---- results="markup", out.width="100%"------------------------------------------
 include_graphics(anim_path)

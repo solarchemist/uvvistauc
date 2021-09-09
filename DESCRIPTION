@@ -1,7 +1,7 @@
 Package: uvvistauc
 Type: Package
 Title: Calculate Optical Band Gap of Semiconductors from UV-Vis Spectra using the Tauc Method
-Version: 0.2.0.9000
+Version: 0.2.1.9000
 Author: Taha Ahmed
 Maintainer: Taha Ahmed <taha@chepec.se>
 Description: This package determines the optical band gap by applying the Tauc plot method

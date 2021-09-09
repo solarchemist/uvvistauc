@@ -380,9 +380,14 @@ include_graphics(anim_path)
 + https://en.wikipedia.org/wiki/Tauc_plot
 + https://en.wikipedia.org/wiki/Jan_Tauc
 + https://en.wikipedia.org/wiki/Band_gap
++ Wilbraham, L. taucauto, A Python script that calculates band gap. https://github.com/LiamWilbraham/taucauto
++ https://gepac.github.io/2019-06-07-projeto-bandGap/
 + Macfarlane, G. G.; Roberts, V. Infrared Absorption of Germanium near the Lattice Edge. Phys. Rev. 1955, 97 (6), 1714–1716. https://doi.org/10.1103/PhysRev.97.1714.2.
 + Tauc, J.; Grigorovici, R.; Vancu, A. Optical Properties and Electronic Structure of Amorphous Germanium. Physica Status Solidi 1966, 15, 627–637.
 + Tauc, J. Optical Properties and Electronic Structure of Amorphous Ge and Si. Materials Research Bulletin 1968, 3 (1), 37–46. https://doi.org/10.1016/0025-5408(68)90023-8.
 + Murphy, A. Band-Gap Determination from Diffuse Reflectance Measurements of Semiconductor Films, and Application to Photoelectrochemical Water-Splitting. Solar Energy Materials and Solar Cells 2007, 91 (14), 1326–1337. https://doi.org/10.1016/j.solmat.2007.05.005.
 + Viezbicke, B. D.; Patel, S.; Davis, B. E.; Birnie, D. P. Evaluation of the Tauc Method for Optical Absorption Edge Determination: ZnO Thin Films as a Model System. Physica Status Solidi (B) 2015, 252 (8), 1700–1710. https://doi.org/10.1002/pssb.201552007.
++ Suram, S. K.; Newhouse, P. F.; Gregoire, J. M. High Throughput Light Absorber Discovery, Part 1: An Algorithm for Automated Tauc Analysis. ACS Comb. Sci. 2016, 18 (11), 673–681. https://doi.org/10.1021/acscombsci.6b00053.
++ Schwarting, M.; Siol, S.; Talley, K.; Zakutayev, A.; Phillips, C. Automated Algorithms for Band Gap Analysis from Optical Absorption Spectra. Materials Discovery 2017, 10, 43–52. https://doi.org/10.1016/j.md.2018.04.003.
++ Escobedo-Morales, A.; Ruiz-López, I. I.; Ruiz-Peralta, M. deL.; Tepech-Carrillo, L.; Sánchez-Cantú, M.; Moreno-Orea, J. E. Automated Method for the Determination of the Band Gap Energy of Pure and Mixed Powder Samples Using Diffuse Reflectance Spectroscopy. Heliyon 2019, 5 (4), e01505. https://doi.org/10.1016/j.heliyon.2019.e01505.
 + Ahmed, T.; Edvinsson, T. Optical Quantum Confinement in Ultrasmall ZnO and the Effect of Size on Their Photocatalytic Activity. J. Phys. Chem. C 2020, 124 (11), 6395–6404. https://doi.org/10.1021/acs.jpcc.9b11229.
