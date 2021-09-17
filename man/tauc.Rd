@@ -16,7 +16,7 @@ tauc(
 \arguments{
 \item{energy, }{numeric vector, in eV}
 
-\item{absorbance, }{numeric vector, unitless, should be same length as energy}
+\item{absorbance, }{numeric vector, unitless, must be same length as energy, optical absorbance}
 
 \item{r, }{exponent that determines transition type, 0.5 for direct allowed (default),
 1.5 for direct forbidden, 2 for indirect allowed, and 3 for indirect forbidden transitions.}
@@ -33,19 +33,19 @@ of points in the band edge to fit (default is c(0.3, 0.8))}
 \value{
 tibble with same number of rows as length of input vectors,
     with the following columns:
-    + energy (input values returned)
-    + absorbance to the power of 1/r, named either abs.2, abs.twothirds, abs.onehalf, or abs.onethird
+    + x (same as input vector, energy)
+    + y, absorbance to the power of 1/r
     + ceiling, line that defines the "ceiling" that this function used
-    + floor, line that defines the "ceiling" that this function used
+    + floor, line that defines the "floor" that this function used
     + edge, boolean, TRUE for the rows that are part of the Tauc fit
-    + fit.Eg, the calculated optical band gap
+    + fit.Eg, the calculated optical band gap, in eV
     + fit.tauc, the fitted Tauc line
     + fit.adj_rsq, adjusted R-square of the linear Tauc fit
     + fit.points, the number of data points that are part of the Tauc fit (cf. edge)
 }
 \description{
 This function uses Tauc plotting to determine the optical band gap
-from your supplied UV-Vis absorbance spectra.
+from your supplied UV-Vis absorbance spectrum.
 }
 \examples{
 \dontrun{

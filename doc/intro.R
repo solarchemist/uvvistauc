@@ -92,13 +92,13 @@ spectrum <-
 ## ----single-spectrum-plot, echo=FALSE---------------------------------------------
 ggplot(spectrum) +
    coord_cartesian(ylim = c(0, 7), xlim = c(3.0, 4.3)) +
-   geom_line(aes(energy, fit.tauc), colour = "orange", size = 1.5, alpha = 0.65) +
-   geom_point(aes(energy, abs.2)) +
-   geom_line(aes(energy, abs.2)) +
-   geom_line(aes(energy, floor), colour = "red") +
-   geom_line(aes(energy, ceiling), colour = "#008000") +
+   geom_line(aes(x, fit.tauc), colour = "orange", size = 1.5, alpha = 0.65) +
+   geom_point(aes(x, y)) +
+   geom_line(aes(x, y)) +
+   geom_line(aes(x, floor), colour = "red") +
+   geom_line(aes(x, ceiling), colour = "#008000") +
    geom_point(
-      aes(energy, abs.2),
+      aes(x, y),
       colour = "orange", size = 1.5,
       data = spectrum %>% filter(edge == TRUE)) +
    labs(x = "E/eV", y = paste0("(Abs)<sup>", 1/r, "</sup>")) +
@@ -145,10 +145,10 @@ for (s in 1:length(sampleids)) {
 ## ----multi-spectra-plot, echo=TRUE------------------------------------------------
 ggplot(spectra, aes(group = sampleid)) +
    coord_cartesian(ylim = c(0, 7), xlim = c(3, 4.4)) +
-   geom_line(aes(energy, floor), colour = "red", size = 0.2, alpha = 0.4) +
-   geom_line(aes(energy, ceiling), colour = "#008000", size = 0.2, alpha = 0.4) +
-   geom_line(aes(energy, abs.2), colour = "black", size = 0.3) +
-   geom_line(aes(energy, fit.tauc), colour = "orange", size = 0.3, alpha = 0.6) +
+   geom_line(aes(x, floor), colour = "red", size = 0.2, alpha = 0.4) +
+   geom_line(aes(x, ceiling), colour = "#008000", size = 0.2, alpha = 0.4) +
+   geom_line(aes(x, y), colour = "black", size = 0.3) +
+   geom_line(aes(x, fit.tauc), colour = "orange", size = 0.3, alpha = 0.6) +
    labs(x = "E/eV", y = paste0("(Abs)<sup>", 1/r, "</sup>")) +
    theme(axis.title.y = element_markdown())
 
@@ -180,24 +180,24 @@ p <-
    geom_hline(yintercept = 0, colour = "grey40") +
    # "floor" # layer 2
    geom_line(
-      data = spectra, aes(energy, floor, group = sampleid),
+      data = spectra, aes(x, floor, group = sampleid),
       colour = "red", size = 0.60) +
    # "ceiling" # layer 3
    geom_line(
-      data = spectra, aes(energy, ceiling, group = sampleid),
+      data = spectra, aes(x, ceiling, group = sampleid),
       colour = "#008000", size = 0.60) +
    # the UV-Vis spectra # layer 4
    geom_line(
-      data = spectra, aes(energy, abs.2, group = sampleid),
+      data = spectra, aes(x, y, group = sampleid),
       colour = "black", size = 0.50) +
    # the Tauc fit # layer 5
    geom_line(
-      data = spectra, aes(energy, fit.tauc, group = sampleid),
+      data = spectra, aes(x, fit.tauc, group = sampleid),
       colour = "orange", size = 1.0) +
    # the spectral datapoints fitted selected by our algorithm for Tauc fitting # layer 6
    geom_point(
       data = spectra %>% filter(edge == TRUE),
-      aes(energy, abs.2, group = sampleid),
+      aes(x, y, group = sampleid),
       fill = "orange", colour = "white", shape = 21, size = 2.0) +
    # the point where fitted Tauc line intercepts x-axis, i.e., optical band gap # layer 7
    geom_point(
