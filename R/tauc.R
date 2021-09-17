@@ -16,7 +16,7 @@
 #' @return tibble with same number of rows as length of input vectors,
 #'     with the following columns:
 #'     + energy (input values returned)
-#'     + absorbance (input values returned)
+#'     + absorbance to the power of 1/r, named either abs.2, abs.twothirds, abs.onehalf, or abs.onethird
 #'     + ceiling, line that defines the "ceiling" that this function used
 #'     + floor, line that defines the "ceiling" that this function used
 #'     + edge, boolean, TRUE for the rows that are part of the Tauc fit
@@ -26,6 +26,7 @@
 #'     + fit.points, the number of data points that are part of the Tauc fit (cf. edge)
 #' @importFrom magrittr "%>%"
 #' @importFrom magrittr "%<>%"
+#' @importFrom rlang ":="
 #' @importFrom rlang .data
 #' @export
 #' @examples
@@ -73,6 +74,21 @@ tauc <- function(energy, absorbance, r = 0.5, lowE.limits, highE.limits, bg.limi
    stopifnot(all(varhandle::check.numeric(bg.limits)))
    stopifnot(diff(bg.limits) != 0)
 
+   ## r
+   # define allowed r-values
+   # vecname is used as the name of the return column (see return() below)
+   # is it not possible to use tribble(~var1, ~var2, ...) without incurring at least a NOTE during R CMD check?
+   df.r <-
+      tibble::tribble(
+         ~rvec,  ~vecname, # this use of column names causes "undefined global variable" note by R CMD check
+         0.5,    "abs.2",
+         1.5,    "abs.twothirds",
+         2,      "abs.onehalf",
+         3,      "abs.onethird") %>%
+      dplyr::mutate(texponent = 1/rvec, .after = rvec)
+   if (!(r %in% df.r$rvec)) {
+      paste0("r = ", formatC(r), " is not one of", paste(df.r$rvec, collapse = ", "))
+   }
  
    # let's construct a tibble to work with inside this function
    # we will use the row numbers as a unique identifier for each row
@@ -213,13 +229,22 @@ tauc <- function(energy, absorbance, r = 0.5, lowE.limits, highE.limits, bg.limi
    # extrapolate the fitted Tauc line
    df$fit.tauc <- df.tauc$fit.slope[1] * df$x + df.tauc$fit.intercept[1]
 
+   # Could just return columns named "energy" and "y", and let the user keep track
+   # of which r-value they supplied and thus which "y" they got.
+   # That's a simple solution, and simple is usually good.
+   # But I feel that it's better UX to indicate which Abs^(1/r) that
+   # is returned. And that would mean naming the "y" column dynamically.
+   # Another way, keeping the name of the returned columns static, would be to
+   # always return all four possible columns, and fill all but one with NAs.
+   # But to me, that feels unnecessarily verbose.
+   y.name <- df.r %>% dplyr::filter(rvec == r) %>% dplyr::pull(vecname)
    return(
       df %>% 
       dplyr::select(
-         energy     = .data$x,
-         absorbance = .data$y,
-         ceiling    = .data$y.ceiling,
-         floor      = .data$y.floor,
+         energy      = .data$x,
+         {{y.name}} := .data$y, # this is rlangs' curly-curly notation
+         ceiling     = .data$y.ceiling,
+         floor       = .data$y.floor,
          .data$edge,
          .data$fit.Eg,
          .data$fit.tauc,

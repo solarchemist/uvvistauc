@@ -34,7 +34,7 @@ of points in the band edge to fit (default is c(0.3, 0.8))}
 tibble with same number of rows as length of input vectors,
     with the following columns:
     + energy (input values returned)
-    + absorbance (input values returned)
+    + absorbance to the power of 1/r, named either abs.2, abs.twothirds, abs.onehalf, or abs.onethird
     + ceiling, line that defines the "ceiling" that this function used
     + floor, line that defines the "ceiling" that this function used
     + edge, boolean, TRUE for the rows that are part of the Tauc fit
