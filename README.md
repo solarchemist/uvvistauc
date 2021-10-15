@@ -39,7 +39,7 @@ To use this package in your own R installation:
 
 ```
 install.packages("remotes")
-remotes::install_github("solarchemist/periodicdata")
+remotes::install_github("solarchemist/uvvistauc")
 ```
 
 
