@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/403806584.svg)](https://doi.org/10.5281/zenodo.5814055)
+
 # uvvistauc
 
 This R package calculates the optical band gap of semiconductors from UV-Vis spectra
