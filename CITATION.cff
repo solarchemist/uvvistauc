@@ -1,0 +1,20 @@
+# -----------------------------------------------------------
+# CITATION file created with {cffr} R package, v0.1.1
+# See also: https://docs.ropensci.org/cffr/
+# -----------------------------------------------------------
+
+cff-version: 1.2.0
+message: 'To cite package "uvvistauc" in publications, please use the metadata in this file'
+type: software
+license: GPL-3.0-or-later
+title: 'uvvistauc: Calculate optical band gap of semiconductors from UV-Vis spectra
+  using the Tauc method'
+version: 0.4.1.9000
+abstract: This package determines the optical band gap by applying the Tauc plot method
+  to UV-Vis absorbance spectra. This method is commonly used for semiconductors with
+  direct or indirect band gaps, such as oxides, sulfides, and many others.
+authors:
+- family-names: Ahmed
+  given-names: Taha
+  email: taha@chepec.se
+  orcid: https://orcid.org/0000-0001-6717-0408
