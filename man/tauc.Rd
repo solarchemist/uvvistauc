@@ -16,25 +16,31 @@ tauc(
 \arguments{
 \item{energy, }{numeric vector, in eV}
 
-\item{absorbance, }{numeric vector, unitless, must be same length as energy, optical absorbance}
+\item{absorbance, }{numeric vector, unitless,
+must be same length as energy (optical absorbance)}
 
-\item{r, }{exponent that determines transition type, 0.5 for direct allowed (default),
-1.5 for direct forbidden, 2 for indirect allowed, and 3 for indirect forbidden transitions.}
+\item{r, }{exponent that determines transition type,
+0.5 for direct allowed (default) transition,
+1.5 for direct forbidden,
+2 for indirect allowed, and
+3 for indirect forbidden.}
 
-\item{lowE.limits, }{vector of two numbers, defines low-energy plateau
-two energy values, that define a straight line approximating the low-energy plateau}
+\item{lowE.limits, }{vector of two numbers
+that define a straight line approximating the low-energy plateau.}
 
-\item{highE.limits, }{vector of two numbers, defines high-energy plateau
-two energy values, that define a straight line approximating the high-energy plateau}
+\item{highE.limits, }{vector of two numbers
+that define a straight line approximating the high-energy plateau.}
 
-\item{bg.limits, }{vector of two numbers, relative vertical bounds defining the lower and upper extent
-of points in the band edge to fit (default is c(0.3, 0.8))}
+\item{bg.limits, }{vector of two numbers, default c(0.3, 0.8).
+that define the relative lower and upper bounds
+of points in the band edge to fit.}
 }
 \value{
 tibble with same number of rows as length of input vectors,
     with the following columns:
-    + x (same as input vector, energy)
+    + x, numeric scalar (identical to the input parameter "energy")
     + y, absorbance to the power of 1/r
+      (y is the input parameter "absorbance" raised to 1/r)
     + ceiling, line that defines the "ceiling" that this function used
     + floor, line that defines the "floor" that this function used
     + edge, boolean, TRUE for the rows that are part of the Tauc fit
@@ -42,6 +48,10 @@ tibble with same number of rows as length of input vectors,
     + fit.tauc, the fitted Tauc line
     + fit.adj_rsq, adjusted R-square of the linear Tauc fit
     + fit.points, the number of data points that are part of the Tauc fit (cf. edge)
+    + r, numeric scalar (input param reproduced)
+    + lowE.limits, numeric vector, as list column (input param reproduced)
+    + highE.limits, numeric vector, as list column (input param reproduced)
+    + bg.limits, numeric vector, as list column (input param reproduced)
 }
 \description{
 This function uses Tauc plotting to determine the optical band gap

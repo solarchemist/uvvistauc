@@ -119,7 +119,7 @@ tauc.params <-
 # empty dataframe that we will populate in the loop
 spectra <- data.frame()
 for (s in 1:length(sampleids)) {
-   spectra <- 
+   spectra <-
       bind_rows(
          spectra,
          bind_cols(
@@ -130,13 +130,13 @@ for (s in 1:length(sampleids)) {
                energy = this.data %>% filter(sampleid == sampleids[s]) %>% pull(energy),
                absorbance = this.data %>% filter(sampleid == sampleids[s]) %>% pull(intensity),
                r = 0.5,
-               lowE.limits = 
+               lowE.limits =
                   c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(lowE.min),
                     tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(lowE.max)),
-               highE.limits = 
+               highE.limits =
                   c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(highE.min),
                     tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(highE.max)),
-               bg.limits = 
+               bg.limits =
                   c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(bg.min),
                     tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(bg.max)))))
    message(paste("Completed", sampleids[s]))
@@ -213,7 +213,7 @@ p <-
       axis.text = element_text(size = 11),
       axis.title.y = element_markdown())
 p_anim <-
-   p + 
+   p +
    transition_time(time) +
    # it appears that if you issue multiple shadow_mark() statements, only the last one takes effect
    # so therefore I could not achieve separate shadow *colours* for ceiling/floor/spectrum

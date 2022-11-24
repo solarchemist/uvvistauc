@@ -30,7 +30,7 @@ A data frame with 67257 rows and 12 variables:
 UVVisDataZnO
 }
 \description{
-Experimental dataset of 141 UV-Vis spectra. 
+Experimental dataset of 141 UV-Vis spectra.
     Recorded using OceanOptics HR2000 UV-Vis spectrophotometer.
     For more details, see the cited sources.
 }

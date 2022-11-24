@@ -18,17 +18,17 @@ Here I have developed a semi-automatic algorithm, that only requires you to supp
 four *x* values: two values that define the mostly linear part on the low-energy side
 of the band edge, and two values that define the high-energy side of the band edge.
 
-This algorithm returns the calculated optical band gap, 
+This algorithm returns the calculated optical band gap,
 the fitted Tauc line, as well as the adjusted R-square of the Tauc fit and
 its number of fitted data points.
 
-Note that this package expects you to supply your UV-Vis data as 
+Note that this package expects you to supply your UV-Vis data as
 absorbance (unitless) *vs* energy (in electronvolts).
 
 So far, this package has only been tested for ZnO.
 If you use it with other materials, I would love it if you would let me know!
 
-To learn more about how this package implements the Tauc algorithm, 
+To learn more about how this package implements the Tauc algorithm,
 **[read the vignette](https://htmlpreview.github.io/?https://github.com/solarchemist/uvvistauc/blob/master/doc/intro.html)**.
 
 This package also includes a dataset with a time-series of UV-Vis spectra from an experiment
@@ -37,22 +37,45 @@ on growing colloidal ZnO nanoparticles.
 
 ## Install this package
 
-To use this package in your own R installation:
+To use this package, install it from this repo:
 
 ```
 install.packages("remotes")
 remotes::install_github("solarchemist/uvvistauc")
 ```
 
+If you encounter bugs or have questions
+[please open an issue](https://github.com/solarchemist/uvvistauc/issues).
 
 
-## Modify or develop this package
+## Develop this package
 
-To check out the source code of this package:
-
+Check out the source code from this repo:
 ```
 git clone https://github.com/solarchemist/uvvistauc.git
 ```
+
+I suggest the following package rebuild procedure (in RStudio IDE):
+
++ Run `devtools::check()` (in the console or via the **Build** pane).
+  Should complete with one note about "installed package size" being large
+  and no warnings or errors (be warned, the step `creating vignettes ...` may
+  take several minutes to finish):
+```
+── R CMD check results ───────────────────────────────────────────── uvvistauc 0.5.0.9000 ────
+Duration: 5m 45.5s
+
+❯ checking installed package size ... NOTE
+    installed size is 10.0Mb
+    sub-directories of 1Mb or more:
+      doc    8.0Mb
+      help   1.7Mb
+
+0 errors ✔ | 0 warnings ✔ | 1 note ✖
+```
++ Run `devtools::build_vignettes()` in the console. This recompiles the vignettes
+  and populates the `doc/` directory.
++ Manually remove the line `doc` from `.gitignore` (the build step keeps adding it).
 
 
 
@@ -60,4 +83,4 @@ git clone https://github.com/solarchemist/uvvistauc.git
 
 If you would like to add another example dataset, or report errors in the code
 of offer improvements or any other contribution, you're very welcome.
-Please do so by opening an issue or a pull request.
+Feel free to [contact me](https://solarchemist.se/contact/).

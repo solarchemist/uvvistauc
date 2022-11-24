@@ -102,15 +102,15 @@ the band edge to stay constant over time, e.g., due to changing particle size, a
 calculating the band gap by hand for each spectrum quickly becomes tedious.
 
 We have developed a semi-automatic algorithm,
-that only requires you to supply four *x* values: 
-**two values that define the "plateau" on the low-energy side of the band edge**, and 
+that only requires you to supply four *x* values:
+**two values that define the "plateau" on the low-energy side of the band edge**, and
 **two values that define the "plateau" on the high-energy side of the band edge**.
 
 This algorithm takes the energy and absorbance of a single spectrum as input,
 and returns the calculated optical band gap, as well as the fitted Tauc line
 and its goodness-of-fit parameters (adjusted R-squared and number of points).
 
-Note that this package expects you to supply the UV-Vis spectrum as 
+Note that this package expects you to supply the UV-Vis spectrum as
 absorbance (unitless) vs energy (in electronvolts).
 
 ```{r sketch, results="markup", out.width="100%"}
@@ -123,9 +123,9 @@ the dark green and dark red circles, respectively.
 Using these x-values, we find all spectral datapoints inside their defined ranges
 and create two linear fits, that define the "floor" (red line)
 and "ceiling" (green line) below and above the band edge, respectively.
-The vertical extent of the band edge can then be calculated (dashed orange line, `ceiling2floor`), 
-and finally a subset of vertical range, whose extent is defined by the input parameter 
-`bg.limits` (which defaults to `c(0.3, 0.8)` of the floor-to-ceiling distance), 
+The vertical extent of the band edge can then be calculated (dashed orange line, `ceiling2floor`),
+and finally a subset of vertical range, whose extent is defined by the input parameter
+`bg.limits` (which defaults to `c(0.3, 0.8)` of the floor-to-ceiling distance),
 is used to select the spectral datapoints that are fitted linearly (solid orange line).
 The intersect of this linear fit with the x-axis is the optical band gap.
 
@@ -220,7 +220,7 @@ tauc.params <-
 # empty dataframe that we will populate in the loop
 spectra <- data.frame()
 for (s in 1:length(sampleids)) {
-   spectra <- 
+   spectra <-
       bind_rows(
          spectra,
          bind_cols(
@@ -231,13 +231,13 @@ for (s in 1:length(sampleids)) {
                energy = this.data %>% filter(sampleid == sampleids[s]) %>% pull(energy),
                absorbance = this.data %>% filter(sampleid == sampleids[s]) %>% pull(intensity),
                r = 0.5,
-               lowE.limits = 
+               lowE.limits =
                   c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(lowE.min),
                     tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(lowE.max)),
-               highE.limits = 
+               highE.limits =
                   c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(highE.min),
                     tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(highE.max)),
-               bg.limits = 
+               bg.limits =
                   c(tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(bg.min),
                     tauc.params %>% filter(sampleid == sampleids[s]) %>% pull(bg.max)))))
    message(paste("Completed", sampleids[s]))
@@ -344,7 +344,7 @@ p <-
       axis.text = element_text(size = 11),
       axis.title.y = element_markdown())
 p_anim <-
-   p + 
+   p +
    transition_time(time) +
    # it appears that if you issue multiple shadow_mark() statements, only the last one takes effect
    # so therefore I could not achieve separate shadow *colours* for ceiling/floor/spectrum

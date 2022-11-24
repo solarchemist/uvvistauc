@@ -1,6 +1,6 @@
 #' @name UVVisDataZnO
 #' @title UV-Vis spectra of growing, colloidal ZnO quantum dots
-#' @description Experimental dataset of 141 UV-Vis spectra. 
+#' @description Experimental dataset of 141 UV-Vis spectra.
 #'     Recorded using OceanOptics HR2000 UV-Vis spectrophotometer.
 #'     For more details, see the cited sources.
 #' @docType data
