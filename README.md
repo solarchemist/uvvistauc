@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/403806584.svg)](https://doi.org/10.5281/zenodo.5814055)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7352997.svg)](https://doi.org/10.5281/zenodo.5814054)
 
 # uvvistauc
 
