@@ -4,12 +4,13 @@
 # -----------------------------------------------------------
 
 cff-version: 1.2.0
-message: 'To cite package "uvvistauc" in publications, please use the metadata in this file'
+message: 'To cite the uvvistauc package in publications, please use the metadata in this file'
 type: software
 license: GPL-3.0-or-later
-title: 'uvvistauc: Calculate optical band gap of semiconductors from UV-Vis spectra
-  using the Tauc method'
-version: 0.5.0.9000
+title: 'The uvvistauc package: calculate optical band gap of semiconductors from
+  UV-Vis spectra using the Tauc method'
+version: 0.5.1.9000
+doi: 10.5281/zenodo.5814054
 abstract: This package determines the optical band gap by applying the Tauc plot method
   to UV-Vis absorbance spectra. This method is commonly used for semiconductors with
   direct or indirect band gaps, such as oxides, sulfides, and many others.

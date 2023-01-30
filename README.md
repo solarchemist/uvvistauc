@@ -1,6 +1,10 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7352997.svg)](https://doi.org/10.5281/zenodo.5814054)
-
 # uvvistauc
+
+<!-- badges: start -->
+[![DOI](https://raw.githubusercontent.com/solarchemist/uvvistauc/master/man/figures/badge-doi.svg)](https://doi.org/10.5281/zenodo.5814054)
+[![Vignette](https://raw.githubusercontent.com/solarchemist/uvvistauc/master/man/figures/badge-vignette.svg)](https://htmlpreview.github.io/?https://github.com/solarchemist/uvvistauc/blob/master/doc/intro.html)
+[![Shiny app](https://raw.githubusercontent.com/solarchemist/uvvistauc/master/man/figures/badge-shiny.svg)](https://shiny.solarchemist.se/uvvistauc-reactive)
+<!-- badges: end -->
 
 This R package calculates the optical band gap of semiconductors from UV-Vis spectra
 using Tauc plots.
@@ -37,7 +41,7 @@ on growing colloidal ZnO nanoparticles.
 
 ## Install this package
 
-To use this package, install it from this repo:
+To use this package, install it directly from this repo:
 
 ```
 install.packages("remotes")
@@ -62,14 +66,14 @@ I suggest the following package rebuild procedure (in RStudio IDE):
   and no warnings or errors (be warned, the step `creating vignettes ...` may
   take several minutes to finish):
 ```
-── R CMD check results ───────────────────────────────────────────── uvvistauc 0.5.0.9000 ────
-Duration: 5m 45.5s
+── R CMD check results ───────────────────────────────────────────── uvvistauc 0.5.1.9000 ────
+Duration: 6m 0.1s
 
 ❯ checking installed package size ... NOTE
     installed size is 10.0Mb
     sub-directories of 1Mb or more:
       doc    8.0Mb
-      help   1.7Mb
+      help   1.8Mb
 
 0 errors ✔ | 0 warnings ✔ | 1 note ✖
 ```
@@ -84,3 +88,16 @@ Duration: 5m 45.5s
 If you would like to add another example dataset, or report errors in the code
 of offer improvements or any other contribution, you're very welcome.
 Feel free to [contact me](https://solarchemist.se/contact/).
+
+
+
+## Citation
+
+To cite uvvistauc in publications use:
+
+Taha Ahmed (2022). The uvvistauc package: calculate optical band gap of semiconductors
+from UV-Vis spectra using the Tauc method.
+DOI: [10.5281/zenodo.5814054](https://doi.org/10.5281/zenodo.5814054).
+
+Or see the `CITATION.cff` ([citation file format](https://citation-file-format.github.io/))
+file in this repo or in the sidebar.
