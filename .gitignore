@@ -4,6 +4,4 @@
 .Ruserdata
 *.Rproj
 *.code-workspace
-man/figures/*.svg
-man/figures/*.xopp
 /Meta/
